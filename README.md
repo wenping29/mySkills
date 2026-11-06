@@ -1,6 +1,8 @@
 # Skills 工作区总览
 
-34 个可复用 skill。2026-11-05 第一批合并去重：原 6 个重构族 skill 合并为 `code-quality`，原 4 个社媒采集 skill 合并为 `social-collect`。同日第二批迁入 `D:\skills\skillsets` 剩余 3 个 skillset（engineering-workflow 17 技能、design-and-docs 19 技能、dotnet 107 技能），合并/蒸馏为 19 个新 skill 并并入 2 个现有 skill。全部 skill 通过 description 划清触发边界，避免冲突。
+34 个可复用 skill。2026-11-05 第一批合并去重：原 6 个重构族 skill 合并为 `code-quality`，原 4 个社媒采集 skill 合并为 `social-collect`。同日第二批迁入 `D:\skills\skillsets` 剩余 3 个 skillset（engineering-workflow 17 技能、design-and-docs 19 技能、dotnet 107 技能），合并/蒸馏为 19 个新 skill 并并入 2 个现有 skill。2026-11-06 第三批语言统一：6 个全英文 skill 的 SKILL.md 入口已全部译为中文，全库入口文档无纯英文文件。全部 skill 通过 description 划清触发边界，避免冲突。
+
+> 各 skill 的触发语示例、调用方式与组合流程详见 [使用指南.md](使用指南.md)。
 
 ## 技能清单与触发边界
 
@@ -103,6 +105,12 @@ Copy-Item -Recurse -Force "d:\学习资料\skills\prd-writer" ".trae\skills\"
 - **与 Trae 内置能力的边界**：office-docs vs 内置 office-plugin（本库为独立可移植版）；skill-creator vs 内置同名（Trae 环境内置优先）；browser-skill vs 内置 TRAE-browseruse（沿用第一批规则）。
 - 源目录 `D:\skills\skillsets` 保持只读，未修改或删除。
 
+## 翻译记录与语言规范（第三批，2026-11-06）
+
+- **已译为中文的 6 个 SKILL.md 入口**：claude-api、reverse-engineer-anything、mcp-builder、discernment-nudge、web-artifacts-builder、internal-comms。附属 references/scripts/examples 按决策保留英文，按需查阅。
+- **翻译规则**：frontmatter `name` 与目录名一致不动；`license` 保留原文；`description` 中文化但保留英文触发词（Claude、MCP、artifact 等专有名词原文），确保自动匹配不受影响；代码块、命令、文件路径、URL、示例一律不译不改；标题层级与段落顺序保持，不增删内容。
+- **全库语言约定**：SKILL.md 入口正文以中文为主，技术术语可保留英文或"中文（English）"形式；新增/迁入 skill 若入口为纯英文，需按上述规则翻译后入库。
+
 ## 校验
 
 ```powershell
@@ -117,6 +125,15 @@ Get-ChildItem -Directory "d:\学习资料\skills" | ForEach-Object {
 
 预期：34 个 skill，`name` 与目录名一致（`tech-test-automation` 的入口为 `skillsets/` 下的工作流文档）。
 
+语言扫描（入口不应为纯英文，预期无输出）：
+
+```powershell
+Get-ChildItem -Directory "d:\学习资料\skills" | Where-Object { $_.Name -notin @('.trae','.screenshots') } | ForEach-Object {
+  $f = Join-Path $_.FullName "SKILL.md"
+  if ((Test-Path $f) -and ((Get-Content $f -Raw -Encoding UTF8) -notmatch '[\u4e00-\u9fff]')) { "FULL-ENGLISH: $($_.Name)" }
+}
+```
+
 ## 蒸馏原则
 
 1. 只提炼可复用方法、结构、检查清单，不复刻原始文档。
@@ -124,3 +141,4 @@ Get-ChildItem -Directory "d:\学习资料\skills" | ForEach-Object {
 3. 涉及军事、历史、合规、数据安全的内容，保留"需授权/需法务确认"的边界提示。
 4. 示例数据用占位符，不引用真实业务数据。
 5. 每个 skill 的 `description` 含中英文触发词与"不用于"边界，便于自动匹配且互不抢触发。
+6. SKILL.md 入口以中文为主；迁入纯英文入口时按"翻译记录与语言规范"一节翻译，附属参考文档可保留英文。
